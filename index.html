@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uniform Acceleration: Ramp & Cart Kinematics Lab | The Thinking Experiment</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Decorative background grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <div class="shell">
+    <!-- Header Banner -->
+    <header class="hero">
+      <div class="hero-top">
+        <div>
+          <span class="brand-badge">The Thinking Experiment</span>
+          <h1>Uniform Acceleration: Ramp & Cart Kinematics Lab</h1>
+          <p class="hero-subtitle">
+            Observe the cart's motion on an incline, sketch your predicted <span class="math-expr">x-t</span>, <span class="math-expr">v-t</span>, and <span class="math-expr">a-t</span> graphs, and run the motion detector to test your modeling hypotheses.
+          </p>
+        </div>
+        <div class="hero-meta-badges">
+          <span class="meta-badge">Unit 3: Uniform Acceleration</span>
+          <span class="meta-badge">Modeling Instruction</span>
+          <button class="btn btn-sm btn-ghost" onclick="window.print()" style="background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.4);">🖨️ Print Lab Summary</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scenario Navigation Tabs -->
+    <nav class="scenario-nav" aria-label="Kinematics Scenarios">
+      <button class="scenario-tab active" data-scenario="1">
+        📈 1. Speeding Up (+ Dir)
+      </button>
+      <button class="scenario-tab" data-scenario="2">
+        📉 2. Slowing Down (+ Dir)
+      </button>
+      <button class="scenario-tab" data-scenario="3">
+        📈 3. Speeding Up (- Dir)
+      </button>
+      <button class="scenario-tab" data-scenario="4">
+        📉 4. Slowing Down (- Dir)
+      </button>
+      <button class="scenario-tab" data-scenario="5">
+        🔄 5. Up & Down Ramp
+      </button>
+      <button class="scenario-tab" data-scenario="sandbox">
+        🧪 Custom Sandbox / Free Play
+      </button>
+    </nav>
+
+    <!-- Active Scenario Description Banner & Workflow Modes -->
+    <section class="scenario-banner" aria-label="Current Scenario Description">
+      <div>
+        <h2 class="scenario-banner-title" id="bannerTitle">1. Increasing Speed in the Positive Direction</h2>
+        <p class="scenario-banner-desc" id="bannerDesc">
+          Cart starts from rest near the motion detector (0 position) and rolls down the incline away from the detector (+ direction).
+        </p>
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <!-- Pedagogical Mode Switcher -->
+        <div class="workflow-pill-group" aria-label="Modeling Workflow Step">
+          <button class="workflow-pill-btn active" id="btnModePredict">
+            <span>✏️</span> 1. Predict Graphs
+          </button>
+          <button class="workflow-pill-btn" id="btnModeObserve">
+            <span>🤖</span> 2. Run Detector
+          </button>
+        </div>
+
+        <div id="tangentBadgeContainer">
+          <span class="slope-inspector-badge" id="tangentBadge">Slope (v) = +0.00 m/s</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sandbox Configuration Panel (Free Play with Lift Either Side Controls) -->
+    <section class="sandbox-settings" id="sandboxSettings">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-amber-dark); margin: 0;">
+          ⚙️ Incline Tilt &amp; Free Play Parameters
+        </h3>
+        <div style="display: flex; gap: 0.35rem;">
+          <button class="btn btn-sm btn-ghost" id="btnTiltLeft" title="Lift left end of ramp">📐 Lift Left End</button>
+          <button class="btn btn-sm btn-ghost" id="btnTiltFlat" title="Level track flat">➖ Level Flat (0°)</button>
+          <button class="btn btn-sm btn-ghost" id="btnTiltRight" title="Lift right end of ramp">📐 Lift Right End</button>
+        </div>
+      </div>
+
+      <div class="sandbox-controls-grid">
+        <div class="sandbox-control-item">
+          <label>Incline Tilt Angle (<span class="math-expr">θ</span>): <span id="valAngle" style="color: var(--primary-teal-dark);">12° (Right Lifted)</span></label>
+          <input type="range" id="sliderAngle" min="-22" max="22" step="1" value="12">
+          <span style="font-size: 0.7rem; color: var(--muted);">Slide left for Left-Lifted (-θ) | Slide right for Right-Lifted (+θ)</span>
+        </div>
+        <div class="sandbox-control-item">
+          <label>Initial Position (<span class="math-expr">x<sub>0</sub></span>): <span id="valX0" style="color: var(--primary-teal);">0.20 m</span></label>
+          <input type="range" id="sliderX0" min="0.1" max="2.4" step="0.05" value="0.20">
+        </div>
+        <div class="sandbox-control-item">
+          <label>Initial Velocity (<span class="math-expr">v<sub>0</sub></span>): <span id="valV0" style="color: var(--accent-amber);">+1.50 m/s</span></label>
+          <input type="range" id="sliderV0" min="-2.2" max="2.2" step="0.1" value="1.50">
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Layout Grid -->
+    <main class="main-grid">
+      <!-- LEFT COLUMN: Physical Ramp Simulation, Playback Controls, and Motion Map -->
+      <section class="panel" aria-label="Ramp Simulation and Motion Map">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span>📐</span> Physical Track &amp; Cart
+          </h2>
+          <span style="font-size: 0.8rem; font-weight: 600; color: var(--muted);">
+            Ramp Length: 2.6 m | Sonar Origin: <span class="math-expr">x = 0</span>
+          </span>
+        </div>
+
+        <!-- Ramp Track Canvas -->
+        <div class="canvas-card ramp-canvas-wrapper">
+          <canvas id="rampCanvas"></canvas>
+        </div>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+          <div class="playback-buttons">
+            <button class="btn btn-primary" id="btnPlayPause">▶ Run Detector</button>
+            <button class="btn btn-ghost" id="btnPreviewMotion" title="Observe the cart rolling without recording graphs">👀 Preview Motion</button>
+            <button class="btn btn-ghost btn-sm" id="btnStepBack" title="Step Back 0.05s">⏮</button>
+            <button class="btn btn-ghost btn-sm" id="btnStepForward" title="Step Forward 0.05s">⏭</button>
+            <button class="btn btn-ghost btn-sm" id="btnReset" title="Reset cart to starting position">↺ Reset</button>
+          </div>
+
+          <div class="scrub-container">
+            <span style="font-size: 0.82rem; font-weight: 600; color: var(--muted);">Scrub:</span>
+            <input type="range" class="scrub-slider" id="scrubSlider" min="0" max="2.2" step="0.01" value="0">
+            <span class="time-display" id="timeDisplay">0.00s</span>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.3rem;">
+            <span style="font-size: 0.82rem; font-weight: 600; color: var(--muted);">Speed:</span>
+            <div style="display: flex; background: #e2eef3; border-radius: 6px; padding: 2px;">
+              <button class="btn btn-ghost btn-sm speed-btn" data-speed="0.25">0.25x</button>
+              <button class="btn btn-ghost btn-sm speed-btn" data-speed="0.5">0.5x</button>
+              <button class="btn btn-ghost btn-sm speed-btn active" data-speed="1.0">1.0x</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toggles Row -->
+        <div class="toggles-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="chkVectors" checked>
+            <span>Vectors (<span style="color: var(--accent-amber); font-weight: 700;">v</span> &amp; <span style="color: var(--primary-teal); font-weight: 700;">a</span>)</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="chkRuler" checked>
+            <span>Metric Ruler</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="chkSonar" checked>
+            <span>Sonar Waves</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="chkTangent" checked>
+            <span>Tangent Slope</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="chkArea">
+            <span>Shade <span class="math-expr">v-t</span> Area</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="chkTheoryGuide">
+            <span>Theoretical Guide</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="chkNoise">
+            <span>Sensor Noise</span>
+          </label>
+        </div>
+
+        <!-- Live Telemetry Ribbon -->
+        <div class="telemetry-ribbon">
+          <div class="telemetry-card">
+            <div class="telemetry-label">Position (<span class="math-expr">x</span>)</div>
+            <div class="telemetry-val teal" id="telemPos">0.20 m</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="telemetry-label">Velocity (<span class="math-expr">v</span>)</div>
+            <div class="telemetry-val amber" id="telemVel">+0.00 m/s</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="telemetry-label">Acceleration (<span class="math-expr">a</span>)</div>
+            <div class="telemetry-val teal" id="telemAcc">+1.00 m/s²</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="telemetry-label">Speed (<span class="math-expr">|v|</span>)</div>
+            <div class="telemetry-val" id="telemSpeed">0.00 m/s</div>
+          </div>
+        </div>
+
+        <!-- Modeling Motion Map Section -->
+        <div style="margin-top: 1.25rem;">
+          <div class="panel-header" style="margin-bottom: 0.4rem;">
+            <h3 class="panel-title" style="font-size: 0.98rem;">
+              <span>📍</span> Modeling Motion Map (Velocity &amp; Acceleration Vectors)
+            </h3>
+            <span style="font-size: 0.78rem; color: var(--muted); font-weight: 500;">
+              Strobe intervals: <span class="math-expr">Δt = 0.25 s</span>
+            </span>
+          </div>
+          <div class="canvas-card motion-map-canvas-wrapper">
+            <canvas id="motionMapCanvas"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Synchronized Triple Kinematic Graphs with Drawing Tools -->
+      <section class="panel" aria-label="Synchronized Kinematics Graphs">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">
+              <span>📊</span> Kinematics Graphs: Predict &amp; Record
+            </h2>
+            <div class="legend-row">
+              <span class="legend-item"><span class="legend-swatch" style="background: var(--accent-amber);"></span> Student Prediction</span>
+              <span class="legend-item"><span class="legend-swatch" style="background: var(--primary-teal);"></span> Motion Detector Trace</span>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-ghost btn-clear-sketch" data-target="all" title="Clear all graph sketches">🧹 Clear All Sketches</button>
+        </div>
+
+        <div class="graphs-container">
+          <!-- 1. Position vs. Time -->
+          <div class="graph-box">
+            <div class="graph-box-header">
+              <span class="graph-title">Position vs. Time (<span class="math-expr">x</span> vs <span class="math-expr">t</span>)</span>
+              
+              <div class="sketch-toolbar">
+                <button class="sketch-btn btn-preset-shape" data-target="xt" data-shape="parabola-up" title="Insert Upward Curve">📈 Curve ⌢</button>
+                <button class="sketch-btn btn-preset-shape" data-target="xt" data-shape="parabola-down" title="Insert Downward Curve">📉 Curve ⌣</button>
+                <button class="sketch-btn btn-preset-shape" data-target="xt" data-shape="linear-pos" title="Insert Straight Line">📏 Line</button>
+                <button class="sketch-btn btn-clear-sketch" data-target="xt" title="Clear x-t sketch">🧹 Clear</button>
+              </div>
+            </div>
+            <div class="graph-canvas-wrapper drawing-active">
+              <canvas id="xtCanvas"></canvas>
+            </div>
+          </div>
+
+          <!-- 2. Velocity vs. Time -->
+          <div class="graph-box">
+            <div class="graph-box-header">
+              <span class="graph-title">Velocity vs. Time (<span class="math-expr">v</span> vs <span class="math-expr">t</span>)</span>
+              
+              <div class="sketch-toolbar">
+                <button class="sketch-btn btn-preset-shape" data-target="vt" data-shape="linear-pos" title="Insert Positive Slope Line">📈 Rise (+)</button>
+                <button class="sketch-btn btn-preset-shape" data-target="vt" data-shape="linear-neg" title="Insert Negative Slope Line">📉 Fall (-)</button>
+                <button class="sketch-btn btn-preset-shape" data-target="vt" data-shape="flat-zero" title="Insert Zero Line">➖ v = 0</button>
+                <button class="sketch-btn btn-clear-sketch" data-target="vt" title="Clear v-t sketch">🧹 Clear</button>
+              </div>
+            </div>
+            <div class="graph-canvas-wrapper drawing-active">
+              <canvas id="vtCanvas"></canvas>
+            </div>
+          </div>
+
+          <!-- 3. Acceleration vs. Time -->
+          <div class="graph-box">
+            <div class="graph-box-header">
+              <span class="graph-title">Acceleration vs. Time (<span class="math-expr">a</span> vs <span class="math-expr">t</span>)</span>
+              
+              <div class="sketch-toolbar">
+                <button class="sketch-btn btn-preset-shape" data-target="at" data-shape="flat-pos" title="Insert Positive Constant Line">➖ +a</button>
+                <button class="sketch-btn btn-preset-shape" data-target="at" data-shape="flat-neg" title="Insert Negative Constant Line">➖ -a</button>
+                <button class="sketch-btn btn-preset-shape" data-target="at" data-shape="flat-zero" title="Insert Zero Line">➖ a = 0</button>
+                <button class="sketch-btn btn-clear-sketch" data-target="at" title="Clear a-t sketch">🧹 Clear</button>
+              </div>
+            </div>
+            <div class="graph-canvas-wrapper drawing-active">
+              <canvas id="atCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modeling Concept Check & Lab Analysis Panel -->
+    <section class="inquiry-panel" aria-label="Modeling Concept Check">
+      <div class="inquiry-header">
+        <div>
+          <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--ink);">
+            📝 Modeling Inquiry: Graph &amp; Vector Analysis
+          </h2>
+          <p style="font-size: 0.88rem; color: var(--muted); margin-top: 0.2rem;">
+            Answer the conceptual questions from your lab packet. Test your predictions against the motion detector data.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-primary" id="btnCheckAnswers">✓ Check Answers</button>
+          <button class="btn btn-ghost" id="btnResetAnswers">↺ Clear</button>
+        </div>
+      </div>
+
+      <!-- Question Cards Grid -->
+      <div class="question-grid" id="inquiryGrid">
+        <!-- Form elements inserted dynamically -->
+      </div>
+
+      <!-- Pedagogical Explanation Callout Box -->
+      <div class="explanation-callout" id="explanationBox">
+        <div class="explanation-title">
+          <span>💡</span> Modeling Analysis &amp; Physical Explanation
+        </div>
+        <div class="explanation-text" id="explanationText"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Scripts -->
+  <script src="src/accelerationPhysics.js"></script>
+  <script src="src/accelerationApp.js"></script>
+</body>
+</html>
