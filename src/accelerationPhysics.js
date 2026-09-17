@@ -386,16 +386,7 @@ class AccelerationPhysics {
       totalQuestions++;
       const userVal = (userAnswers[key] || "").toLowerCase().trim();
       const expVal = expected[key].toLowerCase().trim();
-      let isMatch = userVal === expVal;
-
-      // Pedagogical flexibility for Question h (velocity-time slope behavior):
-      // Primary correct answer is "constant" (straight-line slope = uniform acceleration a).
-      // If a user/student selects "decreasing" in Scenario 3 or "increasing" in Scenario 4
-      // (considering the numerical progression of velocity values on the v-t graph), also accept it.
-      if (!isMatch && key === "vtSlopeBehavior") {
-        if (Number(scenarioId) === 3 && userVal === "decreasing") isMatch = true;
-        if (Number(scenarioId) === 4 && userVal === "increasing") isMatch = true;
-      }
+      const isMatch = userVal === expVal;
 
       if (isMatch) correctCount++;
 

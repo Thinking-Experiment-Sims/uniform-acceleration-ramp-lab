@@ -1588,15 +1588,10 @@
       vtCard.classList.toggle("correct", vtCorrect);
       vtCard.classList.toggle("incorrect", !vtCorrect);
       if (vtCorrect) {
-        const userVtBeh = (userAns.vtSlopeBehavior || "").toLowerCase().trim();
-        if (userVtBeh === "decreasing" || userVtBeh === "increasing") {
-          vtFb.textContent = "✓ Correct! (Note: While velocity values change, the slope of the straight v-t line is constant uniform acceleration).";
-        } else {
-          vtFb.textContent = "✓ Correct! The slope of v-t is constant uniform acceleration.";
-        }
+        vtFb.textContent = "✓ Correct! The slope of v-t is acceleration, which is constant uniform acceleration.";
       } else {
         if (feedback.vtSlopeBehavior && !feedback.vtSlopeBehavior.correct) {
-          vtFb.textContent = "✗ Recall: The velocity-time graph is a straight line, so its slope is constant uniform acceleration.";
+          vtFb.textContent = "✗ Recall: Acceleration in this unit is uniform, so the slope of the velocity-time graph is always constant.";
         } else if (feedback.vtSlopeSign && !feedback.vtSlopeSign.correct) {
           vtFb.textContent = `✗ Check sign: Acceleration is directed in the ${feedback.vtSlopeSign.expectedValue} direction.`;
         } else {

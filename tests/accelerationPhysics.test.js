@@ -183,17 +183,16 @@ test("Answer Evaluation - All Scenarios", () => {
   assert.equal(eval5.percent, 100);
   assert.equal(eval5.score, 6);
 
-  // Pedagogical flexibility test: vtSlopeBehavior accepts "decreasing" in Scenario 3
-  const answers3Flexible = { ...answers3, vtSlopeBehavior: "decreasing" };
-  const eval3Flex = AccelerationPhysics.evaluateAnswers(3, answers3Flexible);
-  assert.equal(eval3Flex.correct, true);
-  assert.equal(eval3Flex.percent, 100);
+  // Verify that vtSlopeBehavior is strictly constant across scenarios
+  const wrongVtBehavior3 = { ...answers3, vtSlopeBehavior: "decreasing" };
+  const evalWrongVt3 = AccelerationPhysics.evaluateAnswers(3, wrongVtBehavior3);
+  assert.equal(evalWrongVt3.correct, false);
+  assert.equal(evalWrongVt3.feedback.vtSlopeBehavior.correct, false);
 
-  // Pedagogical flexibility test: vtSlopeBehavior accepts "increasing" in Scenario 4
-  const answers4Flexible = { ...answers4, vtSlopeBehavior: "increasing" };
-  const eval4Flex = AccelerationPhysics.evaluateAnswers(4, answers4Flexible);
-  assert.equal(eval4Flex.correct, true);
-  assert.equal(eval4Flex.percent, 100);
+  const wrongVtBehavior4 = { ...answers4, vtSlopeBehavior: "increasing" };
+  const evalWrongVt4 = AccelerationPhysics.evaluateAnswers(4, wrongVtBehavior4);
+  assert.equal(evalWrongVt4.correct, false);
+  assert.equal(evalWrongVt4.feedback.vtSlopeBehavior.correct, false);
 
   // Wrong sign test for Scenario 3
   const wrongSign3 = { ...answers3, xtSlopeSign: "positive" };
