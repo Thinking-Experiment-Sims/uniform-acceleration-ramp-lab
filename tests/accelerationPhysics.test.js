@@ -92,11 +92,11 @@ test("Scenario 5: Up and Down Ramp (Turnaround)", () => {
   assert.ok(downPoints.every(p => p.trackRow === 1));
 });
 
-test("Answer Evaluation", () => {
+test("Answer Evaluation - All Scenarios", () => {
+  // Scenario 1: Speeding Up in Positive Direction
   const answers1 = {
     vSign: "positive",
     aSign: "positive",
-    speedChange: "increasing",
     xtSlopeBehavior: "increasing",
     xtSlopeSign: "positive",
     xtSlopeMeaning: "velocity",
@@ -104,14 +104,106 @@ test("Answer Evaluation", () => {
     vtSlopeSign: "positive",
     vtSlopeMeaning: "acceleration"
   };
-
   const eval1 = AccelerationPhysics.evaluateAnswers(1, answers1);
   assert.equal(eval1.correct, true);
   assert.equal(eval1.percent, 100);
+  assert.equal(eval1.score, 8);
 
-  // Wrong answer test
-  const wrongAnswers = { ...answers1, vSign: "negative" };
-  const evalWrong = AccelerationPhysics.evaluateAnswers(1, wrongAnswers);
-  assert.equal(evalWrong.correct, false);
-  assert.equal(evalWrong.feedback.vSign.correct, false);
+  // Scenario 2: Slowing Down in Positive Direction
+  const answers2 = {
+    vSign: "positive",
+    aSign: "negative",
+    xtSlopeBehavior: "decreasing",
+    xtSlopeSign: "positive",
+    xtSlopeMeaning: "velocity",
+    vtSlopeBehavior: "constant",
+    vtSlopeSign: "negative",
+    vtSlopeMeaning: "acceleration"
+  };
+  const eval2 = AccelerationPhysics.evaluateAnswers(2, answers2);
+  assert.equal(eval2.correct, true);
+  assert.equal(eval2.percent, 100);
+  assert.equal(eval2.score, 8);
+
+  // Scenario 3: Speeding Up in Negative Direction (0 -> -1.9 m/s, slope decreases numerically)
+  const answers3 = {
+    vSign: "negative",
+    aSign: "negative",
+    xtSlopeBehavior: "decreasing", // Negative number is less than zero
+    xtSlopeSign: "negative",
+    xtSlopeMeaning: "velocity",
+    vtSlopeBehavior: "constant",
+    vtSlopeSign: "negative",
+    vtSlopeMeaning: "acceleration"
+  };
+  const eval3 = AccelerationPhysics.evaluateAnswers(3, answers3);
+  assert.equal(eval3.correct, true);
+  assert.equal(eval3.percent, 100);
+  assert.equal(eval3.score, 8);
+
+  // Verify that "increasing" for xt in Scenario 3 is now correctly rejected
+  const wrong3 = { ...answers3, xtSlopeBehavior: "increasing" };
+  const evalWrong3 = AccelerationPhysics.evaluateAnswers(3, wrong3);
+  assert.equal(evalWrong3.correct, false);
+  assert.equal(evalWrong3.feedback.xtSlopeBehavior.correct, false);
+
+  // Scenario 4: Slowing Down in Negative Direction (-1.8 -> 0 m/s, slope increases numerically)
+  const answers4 = {
+    vSign: "negative",
+    aSign: "positive",
+    xtSlopeBehavior: "increasing", // -1.8 < 0, moving to 0 is increasing
+    xtSlopeSign: "negative",
+    xtSlopeMeaning: "velocity",
+    vtSlopeBehavior: "constant",
+    vtSlopeSign: "positive",
+    vtSlopeMeaning: "acceleration"
+  };
+  const eval4 = AccelerationPhysics.evaluateAnswers(4, answers4);
+  assert.equal(eval4.correct, true);
+  assert.equal(eval4.percent, 100);
+  assert.equal(eval4.score, 8);
+
+  // Verify that "decreasing" for xt in Scenario 4 is now correctly rejected
+  const wrong4 = { ...answers4, xtSlopeBehavior: "decreasing" };
+  const evalWrong4 = AccelerationPhysics.evaluateAnswers(4, wrong4);
+  assert.equal(evalWrong4.correct, false);
+  assert.equal(evalWrong4.feedback.xtSlopeBehavior.correct, false);
+
+  // Scenario 5: Up and Down Ramp (Turnaround)
+  const answers5 = {
+    vDirChange: "yes",
+    aDirChange: "no",
+    xtSlopeMeaning: "velocity",
+    vtSlopeBehavior: "constant",
+    vtSlopeSign: "negative",
+    vtSlopeMeaning: "acceleration"
+  };
+  const eval5 = AccelerationPhysics.evaluateAnswers(5, answers5);
+  assert.equal(eval5.correct, true);
+  assert.equal(eval5.percent, 100);
+  assert.equal(eval5.score, 6);
+
+  // Pedagogical flexibility test: vtSlopeBehavior accepts "decreasing" in Scenario 3
+  const answers3Flexible = { ...answers3, vtSlopeBehavior: "decreasing" };
+  const eval3Flex = AccelerationPhysics.evaluateAnswers(3, answers3Flexible);
+  assert.equal(eval3Flex.correct, true);
+  assert.equal(eval3Flex.percent, 100);
+
+  // Pedagogical flexibility test: vtSlopeBehavior accepts "increasing" in Scenario 4
+  const answers4Flexible = { ...answers4, vtSlopeBehavior: "increasing" };
+  const eval4Flex = AccelerationPhysics.evaluateAnswers(4, answers4Flexible);
+  assert.equal(eval4Flex.correct, true);
+  assert.equal(eval4Flex.percent, 100);
+
+  // Wrong sign test for Scenario 3
+  const wrongSign3 = { ...answers3, xtSlopeSign: "positive" };
+  const evalWrongSign3 = AccelerationPhysics.evaluateAnswers(3, wrongSign3);
+  assert.equal(evalWrongSign3.correct, false);
+  assert.equal(evalWrongSign3.feedback.xtSlopeSign.correct, false);
+
+  // Wrong meaning test for Scenario 3
+  const wrongMeaning3 = { ...answers3, xtSlopeMeaning: "acceleration" };
+  const evalWrongMeaning3 = AccelerationPhysics.evaluateAnswers(3, wrongMeaning3);
+  assert.equal(evalWrongMeaning3.correct, false);
+  assert.equal(evalWrongMeaning3.feedback.xtSlopeMeaning.correct, false);
 });

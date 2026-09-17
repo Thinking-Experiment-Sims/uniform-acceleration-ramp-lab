@@ -1549,7 +1549,33 @@
                         (feedback.xtSlopeMeaning ? feedback.xtSlopeMeaning.correct : true);
       xtCard.classList.toggle("correct", xtCorrect);
       xtCard.classList.toggle("incorrect", !xtCorrect);
-      xtFb.textContent = xtCorrect ? "✓ Correct! The slope of x-t is velocity." : "✗ Recall: slope on position-time indicates instantaneous velocity.";
+      if (xtCorrect) {
+        if (scenarioId === 3) {
+          xtFb.textContent = "✓ Correct! The slope of x-t is velocity, which decreases from 0 to negative values (a negative number is less than zero).";
+        } else if (scenarioId === 4) {
+          xtFb.textContent = "✓ Correct! The slope of x-t is velocity, which increases from negative values toward 0 (-1.8 < 0).";
+        } else if (scenarioId === 1) {
+          xtFb.textContent = "✓ Correct! The slope of x-t is velocity, which increases from 0 to positive values.";
+        } else if (scenarioId === 2) {
+          xtFb.textContent = "✓ Correct! The slope of x-t is velocity, which decreases from positive values toward 0.";
+        } else {
+          xtFb.textContent = "✓ Correct! The slope of x-t represents velocity (decreasing continuously throughout).";
+        }
+      } else {
+        if (feedback.xtSlopeBehavior && !feedback.xtSlopeBehavior.correct) {
+          if (scenarioId === 3) {
+            xtFb.textContent = "✗ Note on slope behavior: A negative number is less than zero. Going from 0 to negative velocity means the slope is decreasing in numerical value.";
+          } else if (scenarioId === 4) {
+            xtFb.textContent = "✗ Note on slope behavior: Moving from a negative number toward 0 is an increase in numerical value (the slope is increasing).";
+          } else {
+            xtFb.textContent = "✗ Check behavior: Slope on position-time indicates instantaneous velocity.";
+          }
+        } else if (feedback.xtSlopeSign && !feedback.xtSlopeSign.correct) {
+          xtFb.textContent = `✗ Check sign: Velocity points in the ${feedback.xtSlopeSign.expectedValue} direction.`;
+        } else {
+          xtFb.textContent = "✗ Recall: The slope of position-time represents instantaneous velocity.";
+        }
+      }
       xtFb.className = `feedback-msg show ${xtCorrect ? "correct" : "incorrect"}`;
     }
 
@@ -1561,7 +1587,22 @@
                         (feedback.vtSlopeMeaning ? feedback.vtSlopeMeaning.correct : true);
       vtCard.classList.toggle("correct", vtCorrect);
       vtCard.classList.toggle("incorrect", !vtCorrect);
-      vtFb.textContent = vtCorrect ? "✓ Correct! The slope of v-t is acceleration." : "✗ Recall: slope on velocity-time is constant uniform acceleration.";
+      if (vtCorrect) {
+        const userVtBeh = (userAns.vtSlopeBehavior || "").toLowerCase().trim();
+        if (userVtBeh === "decreasing" || userVtBeh === "increasing") {
+          vtFb.textContent = "✓ Correct! (Note: While velocity values change, the slope of the straight v-t line is constant uniform acceleration).";
+        } else {
+          vtFb.textContent = "✓ Correct! The slope of v-t is constant uniform acceleration.";
+        }
+      } else {
+        if (feedback.vtSlopeBehavior && !feedback.vtSlopeBehavior.correct) {
+          vtFb.textContent = "✗ Recall: The velocity-time graph is a straight line, so its slope is constant uniform acceleration.";
+        } else if (feedback.vtSlopeSign && !feedback.vtSlopeSign.correct) {
+          vtFb.textContent = `✗ Check sign: Acceleration is directed in the ${feedback.vtSlopeSign.expectedValue} direction.`;
+        } else {
+          vtFb.textContent = "✗ Recall: The slope of velocity-time represents acceleration.";
+        }
+      }
       vtFb.className = `feedback-msg show ${vtCorrect ? "correct" : "incorrect"}`;
     }
 

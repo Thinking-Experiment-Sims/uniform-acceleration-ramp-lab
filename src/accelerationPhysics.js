@@ -25,12 +25,12 @@ class AccelerationPhysics {
         x0: 0.20, // m
         v0: 0.0,  // m/s
         a: 1.0,   // m/s^2 (points in + direction, speeding up)
+        speedChange: "increasing",
         tMax: 2.2, // s
         trackLength: 2.6, // m
         expectedAnswers: {
           vSign: "positive",
           aSign: "positive",
-          speedChange: "increasing",
           xtSlopeBehavior: "increasing",
           xtSlopeSign: "positive",
           xtSlopeMeaning: "velocity",
@@ -38,7 +38,7 @@ class AccelerationPhysics {
           vtSlopeSign: "positive",
           vtSlopeMeaning: "acceleration"
         },
-        explanation: "The cart begins at rest and moves in the positive direction (away from detector). Because gravity accelerates it down the incline in the positive direction (a > 0), both v and a are positive. When velocity and acceleration share the same sign, the cart speeds up."
+        explanation: "The cart begins at rest and moves in the positive direction (away from detector). Because gravity accelerates it down the incline in the positive direction (a > 0), both v and a are positive. Instantaneous velocity (the slope of position-time) increases from 0 to positive values (+2.2 m/s). The velocity-time graph is a straight line with constant positive slope (+1.0 m/s²), representing uniform acceleration."
       },
       2: {
         id: 2,
@@ -52,12 +52,12 @@ class AccelerationPhysics {
         x0: 0.20, // m
         v0: 1.80, // m/s
         a: -1.0,  // m/s^2 (points down ramp in - direction, slowing down)
+        speedChange: "decreasing",
         tMax: 1.8, // s (stops at t = 1.8s)
         trackLength: 2.6, // m
         expectedAnswers: {
           vSign: "positive",
           aSign: "negative",
-          speedChange: "decreasing",
           xtSlopeBehavior: "decreasing",
           xtSlopeSign: "positive",
           xtSlopeMeaning: "velocity",
@@ -65,7 +65,7 @@ class AccelerationPhysics {
           vtSlopeSign: "negative",
           vtSlopeMeaning: "acceleration"
         },
-        explanation: "The cart moves away from the detector in the positive direction (v > 0), but gravity accelerates it down the incline in the negative direction (a < 0). Since v and a have opposite signs, the cart slows down until it reaches instantaneous rest."
+        explanation: "The cart moves away from the detector in the positive direction (v > 0), but gravity accelerates it down the incline in the negative direction (a < 0). Since v and a have opposite signs, the cart slows down. Instantaneous velocity (the slope of position-time) decreases from +1.8 m/s to 0 m/s. The velocity-time graph is a straight line with constant negative slope (-1.0 m/s²), representing uniform acceleration."
       },
       3: {
         id: 3,
@@ -79,20 +79,20 @@ class AccelerationPhysics {
         x0: 2.00, // m
         v0: 0.0,  // m/s
         a: -1.0,  // m/s^2 (points down ramp in - direction towards detector)
+        speedChange: "increasing",
         tMax: 1.9, // s
         trackLength: 2.6, // m
         expectedAnswers: {
           vSign: "negative",
           aSign: "negative",
-          speedChange: "increasing",
-          xtSlopeBehavior: "increasing",
+          xtSlopeBehavior: "decreasing",
           xtSlopeSign: "negative",
           xtSlopeMeaning: "velocity",
           vtSlopeBehavior: "constant",
           vtSlopeSign: "negative",
           vtSlopeMeaning: "acceleration"
         },
-        explanation: "The cart is released from a positive position and rolls towards the detector (negative direction, v < 0). Gravity accelerates it down the incline towards 0 (a < 0). Since both v and a are negative (same sign), the cart speeds up in the negative direction."
+        explanation: "The cart is released from rest at a positive position (x = 2.0 m, v = 0) and rolls down towards the detector in the negative direction. Instantaneous velocity (the slope of the position-time graph) starts at 0 and becomes negative (reaching -1.9 m/s). Because a negative number is less than zero (-1.9 < 0), the slope is decreasing in numerical value (while the magnitude of speed |v| increases). Meanwhile, the velocity-time graph is a straight line with constant negative slope (-1.0 m/s²), representing uniform downward acceleration."
       },
       4: {
         id: 4,
@@ -106,20 +106,20 @@ class AccelerationPhysics {
         x0: 2.00, // m
         v0: -1.80, // m/s (moving left towards detector)
         a: 1.0,   // m/s^2 (gravity pulls downhill to the right, + direction)
+        speedChange: "decreasing",
         tMax: 1.8, // s (stops at t = 1.8s)
         trackLength: 2.6, // m
         expectedAnswers: {
           vSign: "negative",
           aSign: "positive",
-          speedChange: "decreasing",
-          xtSlopeBehavior: "decreasing",
+          xtSlopeBehavior: "increasing",
           xtSlopeSign: "negative",
           xtSlopeMeaning: "velocity",
           vtSlopeBehavior: "constant",
           vtSlopeSign: "positive",
           vtSlopeMeaning: "acceleration"
         },
-        explanation: "The cart is moving up the ramp toward the detector (v < 0), while gravity pulls it downhill in the positive direction (a > 0). Because v and a have opposite signs, the cart slows down."
+        explanation: "The cart moves up the ramp toward the detector in the negative direction (v < 0), while gravity accelerates it downhill in the positive direction (a > 0). Instantaneous velocity (the slope of the position-time graph) starts at -1.8 m/s and approaches 0 m/s. Because -1.8 is less than 0, moving toward zero means the slope is increasing in numerical value (while speed |v| decreases). Meanwhile, the velocity-time graph is a straight line with constant positive slope (+1.0 m/s²), representing uniform downhill acceleration."
       },
       5: {
         id: 5,
@@ -133,22 +133,18 @@ class AccelerationPhysics {
         x0: 0.20, // m
         v0: 1.80, // m/s
         a: -1.0,  // m/s^2 (constant down ramp throughout)
+        speedChange: "first-decrease-then-increase",
         tMax: 3.6, // s (apex at 1.8s, returns to start at 3.6s)
         trackLength: 2.6, // m
         expectedAnswers: {
-          vSign: "changes", // Positive going up, negative going down
-          aSign: "negative", // Constantly negative!
-          speedChange: "first-decrease-then-increase",
           vDirChange: "yes",
           aDirChange: "no",
-          xtSlopeBehavior: "changes",
-          xtSlopeSign: "changes",
           xtSlopeMeaning: "velocity",
           vtSlopeBehavior: "constant",
           vtSlopeSign: "negative",
           vtSlopeMeaning: "acceleration"
         },
-        explanation: "On the way up, velocity is positive and decreasing. At the peak (apex at t = 1.8 s), instantaneous velocity is 0, but acceleration is still -1.0 m/s² down the ramp! On the way down, velocity becomes negative and speed increases. Acceleration never changes direction or magnitude throughout the entire motion."
+        explanation: "On the way up, velocity is positive and decreasing (+1.8 m/s down to 0). At the peak (apex at t = 1.8 s), instantaneous velocity is 0 m/s, but acceleration is still -1.0 m/s² down the ramp! On the way down, velocity becomes negative and speed increases (0 down to -1.8 m/s). Because velocity changes continuously from +1.8 m/s through 0 to -1.8 m/s, the numerical slope of the position-time graph decreases continuously throughout the entire motion (dv/dt = a = -1.0 < 0). Meanwhile, the slope of the velocity-time graph is constant and negative (-1.0 m/s²) the entire time."
       }
     };
   }
@@ -390,8 +386,17 @@ class AccelerationPhysics {
       totalQuestions++;
       const userVal = (userAnswers[key] || "").toLowerCase().trim();
       const expVal = expected[key].toLowerCase().trim();
-      
-      const isMatch = userVal === expVal;
+      let isMatch = userVal === expVal;
+
+      // Pedagogical flexibility for Question h (velocity-time slope behavior):
+      // Primary correct answer is "constant" (straight-line slope = uniform acceleration a).
+      // If a user/student selects "decreasing" in Scenario 3 or "increasing" in Scenario 4
+      // (considering the numerical progression of velocity values on the v-t graph), also accept it.
+      if (!isMatch && key === "vtSlopeBehavior") {
+        if (Number(scenarioId) === 3 && userVal === "decreasing") isMatch = true;
+        if (Number(scenarioId) === 4 && userVal === "increasing") isMatch = true;
+      }
+
       if (isMatch) correctCount++;
 
       feedback[key] = {
